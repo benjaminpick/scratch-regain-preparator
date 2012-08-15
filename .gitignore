@@ -1,0 +1,11 @@
+build
+thumbs
+bin
+log
+/build.properties
+junitvmwatcher*
+*.log
+test/reports
+/.settings
+/.fbprefs
+/reports/
