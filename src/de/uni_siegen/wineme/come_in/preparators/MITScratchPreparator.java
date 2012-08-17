@@ -37,6 +37,12 @@ public class MITScratchPreparator extends AbstractPreparator {
 	
     private static final String MIME_TYPE_UNKNOWN = "application/x-unknown-mime-type";
 	public static final String SCRATCH_EXTENSION = "sb";
+	
+	private static final String[] TALK_BUBBLES_KEYWORDS = new String[]{
+		"say:",
+		"think:",
+		"doAsk"
+	};
 
 	public MITScratchPreparator() throws RegainException
 	{
@@ -48,7 +54,8 @@ public class MITScratchPreparator extends AbstractPreparator {
 	
 	@Override
 	public void prepare(RawDocument rawDocument) throws RegainException {
-		Hashtable<?, ?> parsedScratchFile = loadFile(rawDocument.getContentAsFile());
+		Hashtable<?, ?> parsedScratchFile = loadFileInfo(rawDocument.getContentAsFile());
+		Object[][] scratchObjectTable = loadObjTable(rawDocument.getContentAsFile());
 		
 		ArrayList<String> info = new ArrayList<String>();
 
@@ -56,13 +63,22 @@ public class MITScratchPreparator extends AbstractPreparator {
 		info.add((String) parsedScratchFile.get("comment"));
 		info.add("Language:" + parsedScratchFile.get("language"));
 		
+		for (int i = 0; i < scratchObjectTable.length; i++)
+		{
+			for (int j = 0; j < TALK_BUBBLES_KEYWORDS.length; j++)
+			{
+				if (scratchObjectTable[i][0].toString().startsWith(TALK_BUBBLES_KEYWORDS[j])) 
+					info.add(scratchObjectTable[i + 1][0].toString());
+			}
+		}
+		
 		setCleanedContent(concatenateStringParts(info, Integer.MAX_VALUE));
         setTitle(concatenateStringParts(info, 2));
 
 		rawDocument.setMimeType(SCRATCH_MIME_TYPE);
 	}
 
-	protected Hashtable<?, ?> loadFile(File file) throws RegainException {
+	protected Hashtable<?, ?> loadFileInfo(File file) throws RegainException {
 		Hashtable<?,?> parsedScratchFile = null;
 		FileInputStream in = null;
 		try {
@@ -71,6 +87,32 @@ public class MITScratchPreparator extends AbstractPreparator {
 	
 			try {
 				 parsedScratchFile = reader.readInfo();
+			} catch (IOException e) {
+				throw new RegainException("Error - Is this really a scratch project file?");
+			}
+			
+		} catch (FileNotFoundException e) {
+			throw new RegainException("Could not read file " + file.getAbsolutePath());
+		} finally {
+			if (in != null)
+			{
+				try {
+					in.close();
+				} catch (IOException e) { }
+			}
+		}
+		return parsedScratchFile;
+	}
+
+	protected Object[][] loadObjTable(File file) throws RegainException {
+		Object[][] parsedScratchFile = null;
+		FileInputStream in = null;
+		try {
+			in = new FileInputStream(file);
+			ObjReader reader = new ObjReader(in);
+	
+			try {
+				 parsedScratchFile = reader.readObjects(null);
 			} catch (IOException e) {
 				throw new RegainException("Error - Is this really a scratch project file?");
 			}
