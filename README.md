@@ -6,7 +6,14 @@ to make them searchable by the regain desktop search.
 
 *Licence* : GNU GPL 2.1 or later
 
-INSTALL
--------
+Build from Source:
+------------------
 
-ant preparators
+* copy `build.properties.template` to `build.properties`
+* edit paths accordingly
+* `ant preparators && ant deploy`
+
+Installation
+------------
+
+* Download .jar and drop it into the `preparator`-Directory.
