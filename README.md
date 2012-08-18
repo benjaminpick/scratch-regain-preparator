@@ -1,5 +1,5 @@
-An regain preparator for Scratch Files
-======================================
+An regain preparator for MIT Scratch Files
+==========================================
 
 Extracts meta-data and text from speach bubbles (say, think, ask)
 to make them searchable by the regain desktop search.
@@ -17,3 +17,9 @@ Installation
 ------------
 
 * Download .jar and drop it into the `preparator`-Directory.
+
+Links
+-----
+
+* Regain: http://regain.sf.net/
+* Scratch: http://scratch.mit.edu/
