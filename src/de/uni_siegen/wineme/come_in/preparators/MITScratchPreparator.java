@@ -54,8 +54,15 @@ public class MITScratchPreparator extends AbstractPreparator {
 	
 	@Override
 	public void prepare(RawDocument rawDocument) throws RegainException {
-		Hashtable<?, ?> parsedScratchFile = loadFileInfo(rawDocument.getContentAsFile());
-		Object[][] scratchObjectTable = loadObjTable(rawDocument.getContentAsFile());
+		Hashtable<?, ?> parsedScratchFile;
+		Object[][] scratchObjectTable;
+		
+		try {
+			parsedScratchFile = loadFileInfo(rawDocument.getContentAsFile());
+			scratchObjectTable = loadObjTable(rawDocument.getContentAsFile());
+		} catch (Throwable e) {
+			throw new RegainException("Scratch file could not be loaded", e);
+		}
 		
 		ArrayList<String> info = new ArrayList<String>();
 
@@ -73,7 +80,7 @@ public class MITScratchPreparator extends AbstractPreparator {
 		}
 		
 		setCleanedContent(concatenateStringParts(info, Integer.MAX_VALUE));
-        setTitle(concatenateStringParts(info, 2));
+		setTitle(concatenateStringParts(info, 2));
 
 		rawDocument.setMimeType(SCRATCH_MIME_TYPE);
 	}
