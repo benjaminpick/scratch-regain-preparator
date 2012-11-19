@@ -55,7 +55,6 @@ public class MITScratchPreparator extends AbstractPreparator {
 	@Override
 	public void prepare(RawDocument rawDocument) throws RegainException {
 		Hashtable<?, ?> parsedScratchFile;
-		Object[][] scratchObjectTable;
 		
 		try {
 			parsedScratchFile = loadFileInfo(rawDocument.getContentAsFile());
@@ -70,7 +69,7 @@ public class MITScratchPreparator extends AbstractPreparator {
 		info.add("Language:" + parsedScratchFile.get("language"));
 
 		try {
-			scratchObjectTable = loadObjTable(rawDocument.getContentAsFile());
+			Object[][] scratchObjectTable = loadObjTable(rawDocument.getContentAsFile());
 			
 			for (int i = 0; i < scratchObjectTable.length; i++)
 			{
