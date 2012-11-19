@@ -59,7 +59,6 @@ public class MITScratchPreparator extends AbstractPreparator {
 		
 		try {
 			parsedScratchFile = loadFileInfo(rawDocument.getContentAsFile());
-			scratchObjectTable = loadObjTable(rawDocument.getContentAsFile());
 		} catch (Throwable e) {
 			throw new RegainException("Scratch file could not be loaded", e);
 		}
@@ -69,14 +68,19 @@ public class MITScratchPreparator extends AbstractPreparator {
 		info.add((String) parsedScratchFile.get("author"));
 		info.add((String) parsedScratchFile.get("comment"));
 		info.add("Language:" + parsedScratchFile.get("language"));
-		
-		for (int i = 0; i < scratchObjectTable.length; i++)
-		{
-			for (int j = 0; j < TALK_BUBBLES_KEYWORDS.length; j++)
+
+		try {
+			scratchObjectTable = loadObjTable(rawDocument.getContentAsFile());
+			
+			for (int i = 0; i < scratchObjectTable.length; i++)
 			{
-				if (scratchObjectTable[i][0].toString().startsWith(TALK_BUBBLES_KEYWORDS[j])) 
-					info.add(scratchObjectTable[i + 1][0].toString());
+				for (int j = 0; j < TALK_BUBBLES_KEYWORDS.length; j++)
+				{
+					if (scratchObjectTable[i][0].toString().startsWith(TALK_BUBBLES_KEYWORDS[j])) 
+						info.add(scratchObjectTable[i + 1][0].toString());
+				}
 			}
+		} catch (Throwable e) {
 		}
 		
 		setCleanedContent(concatenateStringParts(info, Integer.MAX_VALUE));
