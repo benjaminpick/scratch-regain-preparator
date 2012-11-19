@@ -71,9 +71,6 @@
   <path id="sourcepath">
     <pathelement location="src"/>
   </path>
-  <path id="sourcepath-plugin">
-    <pathelement location="plugin/src"/>
-  </path>
 
   <path id="classpath" cache="true">
     <pathelement location="build/classes"/>
@@ -103,24 +100,13 @@
     <echo message="  prepare              Prepares the compilation. (Extracts the libs)"/>
     <echo message="  prepare-once         Prepares the compilation if needed. (Extracts the libs)"/>
 
-    <echo message="  doc                  Generates the JavaDoc documentation."/>
-
     <echo message="  make                 Compiles the source code."/>
-    <echo message="  make-plugin          Compiles the source code of the crawler plugin."/>
     <echo message="                       (and the regain project, if needed)"/>
 
-    <echo message="  make-test            Compiles the test source code."/>
-    <echo message="  test                 Does the JUnit tests."/>
-    <echo message="  test-integration     Does the integration tests."/>
-    <echo message="  test-overview        Does the JUnit tests and give a quick overview."/>
-    <echo message="  test-generate-history Generates a test history from existing Unit-reports."/>
+    <echo message="  package-plugin       Packages the lib as regain preparator." />
 
-    <echo message="  package              Packages the thumbnailer lib as standalone library." />
-    <echo message="                       (including dependencies)"/>
-    <echo message="  package-plugin       Packages the lib as regain plugin." />
-    <echo message="                       (including depencies except those that exist in regain)"/>
-    <echo message="  all                  Creates all."/>
-    <echo message="  public               Public release."/>
+  	<echo message="  deploy-desktop       Installs the regain access controller in regain Desktop." />
+  	<echo message="  deploy-crawler       Installs the regain access controller in regain crawler." />
   </target>
 
 
@@ -196,6 +182,11 @@
    | Compiles the source code.
    +-->
   <target name="make">
+  	<echo message="Making sure everything is prepared at regain ..." />
+  	<ant dir="${regain-location}" useNativeBasedir="true" inheritAll="false">
+  		<target name="prepare-once"/>
+  		<target name="make"/>
+  	</ant>
     <echo message="Compiling the source code using ${java.dir} ..." />
     <fail if="java_dir_empty">
   		Neither 'java.dir' nor JAVA_HOME is set, so no compiling is possible. Please copy build.properties.sample to build.properties and edit its values.
@@ -221,37 +212,6 @@
     </javac>
   </target>
 
-  <target name="make-plugin" depends="make">
-  	<echo message="Making sure everything is prepared at regain ..." />
-  	<ant dir="${regain-location}" useNativeBasedir="true" inheritAll="false">
-  		<target name="prepare-once"/>
-  		<target name="make"/>
-  	</ant>
-  	<echo message="Compiling regain plugin ... (Regain is in ${regain-location})" />
-  	<fail if="java_dir_empty">
-  		Neither 'java.dir' nor JAVA_HOME is set, so no compiling is possible. Please copy build.properties.sample to build.properties and edit its values.
-  	</fail>
-  	<javac destdir="build/classes"
-           debug="${debug}"
-           deprecation="true"
-           executable="${java.dir}/bin/javac"
-           source="1.5"
-           target="1.5"
-           fork="true"
-           includeantruntime="false">
-      <compilerarg value="-Xlint"/>
-      <src>
-        <path refid="sourcepath-plugin"/>
-      </src>
-      <classpath>
-        <path refid="classpath"/>
-        <path refid="classpath-shared"/>
-        <path refid="classpath-regain"/>
-      </classpath>
-    </javac>
-  </target>
-    
-   
    <!--
     | Deploy crawler related changes 
     | Params:
@@ -298,6 +258,11 @@
    <target name="deploy" depends="deploy-crawler, deploy-desktop">
    </target>
    
+	<target name="package-plugin" depends="preparators">
+	</target>
+
+	<target name="package" depends="preparators">
+	</target>
    
    <target name="preparators" depends="make, prepare-once">
     <mkdir dir="build/preparator"/>
